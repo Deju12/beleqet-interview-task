@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable, UnauthorizedException, ConflictException, Logger, NotFoundException, BadRequestException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -19,7 +19,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
-    @InjectQueue(QUEUE_NAMES.NOTIFICATIONS) private readonly notificationsQueue: Queue,
+    @InjectQueue(QUEUE_NAMES.NOTIFICATIONS) private readonly notificationsQueue: any,
   ) { }
 
   async register(dto: RegisterDto) {
@@ -202,3 +202,5 @@ export class AuthService {
     };
   }
 }
+
+

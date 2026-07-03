@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -18,7 +18,7 @@ import { EscrowModule } from './modules/escrow/escrow.module';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ChatModule } from './modules/chat/chat.module';
-import { UploadsModule } from './modules/uploads/uploads.module';
+// import { UploadsModule } from './modules/uploads/uploads.module';
 import { TelegramModule } from './modules/telegram/telegram.module';
 
 @Module({
@@ -77,8 +77,9 @@ import { TelegramModule } from './modules/telegram/telegram.module';
     WalletModule,
     AdminModule,
     ChatModule,
-    UploadsModule,
+    // UploadsModule,
     TelegramModule,
   ],
 })
 export class AppModule {}
+

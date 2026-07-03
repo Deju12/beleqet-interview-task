@@ -1,4 +1,4 @@
-import { Processor, Process } from '@nestjs/bull';
+﻿import { Processor, Process } from '@nestjs/bull';
 import { Logger, Injectable } from '@nestjs/common';
 import { Job as BullJob } from 'bull';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -30,7 +30,7 @@ export class SearchIndexProcessor {
   constructor(private readonly prisma: PrismaService) {}
 
   @Process('index-job')
-  async indexJob(job: BullJob<IndexJobPayload>) {
+  async indexJob(job: any) {
     const { action, entityType, entityId } = job.data;
 
     if (action === 'delete') {
@@ -64,3 +64,4 @@ export class SearchIndexProcessor {
     }
   }
 }
+

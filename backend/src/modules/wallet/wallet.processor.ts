@@ -1,4 +1,4 @@
-import { Processor, Process } from '@nestjs/bull';
+﻿import { Processor, Process } from '@nestjs/bull';
 import { Logger, Injectable } from '@nestjs/common';
 import { Job as BullJob } from 'bull';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -24,7 +24,7 @@ export class WalletProcessor {
   constructor(private readonly prisma: PrismaService) {}
 
   @Process('release-pending')
-  async handleReleasePending(job: BullJob<ReleasePendingPayload>) {
+  async handleReleasePending(job: any) {
     const { walletId, userId, amount, milestoneId } = job.data;
 
     await this.prisma.freelancerWallet.update({
@@ -48,3 +48,4 @@ export class WalletProcessor {
     this.logger.log(`[wallet] Released ETB ${amount} from pending → available for user ${userId}`);
   }
 }
+

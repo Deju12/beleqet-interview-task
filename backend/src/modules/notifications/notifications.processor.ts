@@ -1,4 +1,4 @@
-import { Processor, Process } from '@nestjs/bull';
+﻿import { Processor, Process } from '@nestjs/bull';
 import { Logger, Injectable } from '@nestjs/common';
 import { Job } from 'bull';
 import { ConfigService } from '@nestjs/config';
@@ -29,7 +29,7 @@ export interface EmailPayload {
 @Processor(QUEUE_NAMES.NOTIFICATIONS)
 export class NotificationsProcessor {
   private readonly logger = new Logger(NotificationsProcessor.name);
-  private readonly transporter: nodemailer.Transporter;
+  private readonly transporter: any;
 
   constructor(
     private readonly prisma: PrismaService,
@@ -46,7 +46,7 @@ export class NotificationsProcessor {
   }
 
   @Process(NOTIFICATION_JOBS.SEND_IN_APP)
-  async sendInApp(job: Job<InAppPayload>) {
+  async sendInApp(job: { data: any }) {
     const { userId, type, title, body, metadata } = job.data;
     if (!userId) return;
     await this.prisma.notification.create({
@@ -63,7 +63,7 @@ export class NotificationsProcessor {
   }
 
   @Process(NOTIFICATION_JOBS.SEND_TELEGRAM)
-  async sendTelegram(job: Job<TelegramPayload>) {
+  async sendTelegram(job: { data: any }) {
     const botToken = this.config.get<string>('TELEGRAM_BOT_TOKEN');
     if (!botToken) return;
     try {
@@ -86,7 +86,7 @@ export class NotificationsProcessor {
   }
 
   @Process(NOTIFICATION_JOBS.SEND_EMAIL)
-  async sendEmail(job: Job<EmailPayload>) {
+  async sendEmail(job: { data: any }) {
     const { to, subject, html } = job.data;
     if (!to) return;
     
@@ -103,3 +103,7 @@ export class NotificationsProcessor {
     }
   }
 }
+
+
+
+

@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // Beleqet — Screening BullMQ Processor
 //
 // This is the heart of the event-driven hiring workflow.
@@ -66,8 +66,8 @@ export class ScreeningProcessor {
     private readonly prisma: PrismaService,
     private readonly eventEmitter: EventEmitter2,
     private readonly config: ConfigService,
-    @InjectQueue(QUEUE_NAMES.NOTIFICATIONS) private readonly notificationsQueue: Queue,
-    @InjectQueue(QUEUE_NAMES.ANALYTICS)    private readonly analyticsQueue: Queue,
+    @InjectQueue(QUEUE_NAMES.NOTIFICATIONS) private readonly notificationsQueue: any,
+    @InjectQueue(QUEUE_NAMES.ANALYTICS)    private readonly analyticsQueue: any,
   ) {
     this.openai = new OpenAI({
       apiKey: this.config.get<string>('OPENAI_API_KEY'),
@@ -77,7 +77,7 @@ export class ScreeningProcessor {
   // ── 1. AI Screening ──────────────────────────────────────────────────────
 
   @Process(APPLICATION_JOBS.SCREEN_CANDIDATE)
-  async handleScreenCandidate(job: BullJob<ScreenCandidatePayload>) {
+  async handleScreenCandidate(job: any) {
     const { applicationId, jobTitle, jobDescription, jobRequirements, coverLetter } = job.data;
     this.logger.log(`[screen-candidate] Processing application ${applicationId}`);
 
@@ -205,7 +205,7 @@ export class ScreeningProcessor {
   // ── 2. Notify Recruiter ───────────────────────────────────────────────────
 
   @Process(APPLICATION_JOBS.NOTIFY_RECRUITER)
-  async handleNotifyRecruiter(job: BullJob<{ applicationId: string; jobTitle: string; companyId: string; applicantName: string }>) {
+  async handleNotifyRecruiter(job: any) {
     this.logger.log(`[notify-recruiter] New application for ${job.data.jobTitle}`);
 
     // Find company owner and notify
@@ -236,7 +236,7 @@ export class ScreeningProcessor {
   // ── 3. Schedule Interview ────────────────────────────────────────────────
 
   @Process(APPLICATION_JOBS.SCHEDULE_INTERVIEW)
-  async handleScheduleInterview(job: BullJob<{ applicationId: string; userId: string; jobId: string; jobTitle: string }>) {
+  async handleScheduleInterview(job: any) {
     this.logger.log(`[schedule-interview] Scheduling for application ${job.data.applicationId}`);
 
     // Set a proposed interview slot 3 business days from now
@@ -269,7 +269,7 @@ export class ScreeningProcessor {
   // ── Error handling ───────────────────────────────────────────────────────
 
   @OnQueueFailed()
-  async onFailed(job: BullJob, error: Error) {
+  async onFailed(job: any, error: Error) {
     this.logger.error(
       `Queue job failed: [${job.name}] id=${job.id} attempt=${job.attemptsMade}/${job.opts.attempts}`,
       error.stack,
@@ -286,7 +286,7 @@ export class ScreeningProcessor {
   }
 
   @OnQueueCompleted()
-  onCompleted(job: BullJob) {
+  onCompleted(job: any) {
     this.logger.debug(`Queue job completed: [${job.name}] id=${job.id}`);
   }
 
@@ -354,3 +354,5 @@ Score this application and return JSON with exactly this shape:
     }
   }
 }
+
+

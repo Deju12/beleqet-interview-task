@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable, NotFoundException, ConflictException, Logger,
 } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
@@ -18,9 +18,9 @@ export class ApplicationsService {
     private readonly prisma: PrismaService,
     private readonly eventEmitter: EventEmitter2,
     @InjectQueue(QUEUE_NAMES.APPLICATION)
-    private readonly applicationQueue: Queue,
+    private readonly applicationQueue: any,
     @InjectQueue(QUEUE_NAMES.ANALYTICS)
-    private readonly analyticsQueue: Queue,
+    private readonly analyticsQueue: any,
   ) {}
 
   async submit(userId: string, dto: CreateApplicationDto) {
@@ -89,7 +89,7 @@ export class ApplicationsService {
         companyId: job.companyId,
       },
       { priority: 1 },
-    ).catch(err => this.logger.error('Failed to enqueue SCREEN_CANDIDATE', err.message));
+    ).catch((err: any) => this.logger.error('Failed to enqueue SCREEN_CANDIDATE', err.message));
 
     this.applicationQueue.add(
       APPLICATION_JOBS.NOTIFY_RECRUITER,
@@ -101,12 +101,12 @@ export class ApplicationsService {
         applicantName: `${application.user.firstName} ${application.user.lastName}`,
       },
       { priority: 2 },
-    ).catch(err => this.logger.error('Failed to enqueue NOTIFY_RECRUITER', err.message));
+    ).catch((err: any) => this.logger.error('Failed to enqueue NOTIFY_RECRUITER', err.message));
 
     this.analyticsQueue.add(
       ANALYTICS_JOBS.UPDATE_JOB_STATS,
       { jobId: dto.jobId }
-    ).catch(err => this.logger.error('Failed to enqueue UPDATE_JOB_STATS', err.message));
+    ).catch((err: any) => this.logger.error('Failed to enqueue UPDATE_JOB_STATS', err.message));
 
     this.eventEmitter.emit('application.submitted', {
       applicationId: application.id,
@@ -168,3 +168,7 @@ export class ApplicationsService {
     });
   }
 }
+
+
+
+

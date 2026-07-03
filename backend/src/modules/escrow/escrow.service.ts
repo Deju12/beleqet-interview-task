@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Logger } from '@nestjs/common';
+﻿import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { ConfigService } from '@nestjs/config';
@@ -17,7 +17,7 @@ export class EscrowService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
-    @InjectQueue(QUEUE_NAMES.ESCROW) private readonly escrowQueue: Queue,
+    @InjectQueue(QUEUE_NAMES.ESCROW) private readonly escrowQueue: any,
   ) {}
 
   /** Initiate escrow — returns Chapa/Telebirr payment link */
@@ -134,3 +134,5 @@ export class EscrowService {
     return { success: true };
   }
 }
+
+

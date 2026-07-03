@@ -1,4 +1,4 @@
-import { NestFactory, Reflector } from '@nestjs/core';
+﻿import { NestFactory, Reflector } from '@nestjs/core';
 import { ValidationPipe, ClassSerializerInterceptor, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -8,10 +8,15 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 async function bootstrap() {
+  console.log('1️⃣ Starting bootstrap...');
   const logger = new Logger('Bootstrap');
+  console.log('2️⃣ Creating Nest app...');
   const app = await NestFactory.create(AppModule, { bufferLogs: true, rawBody: true });
+  console.log('3️⃣ Nest app created!');
 
+  console.log('4️⃣ Getting ConfigService...');
   const configService = app.get(ConfigService);
+  console.log('5️⃣ ConfigService obtained!');
   const port = configService.get<number>('PORT', 4000);
   const nodeEnv = configService.get<string>('NODE_ENV', 'development');
 
@@ -73,7 +78,20 @@ async function bootstrap() {
   // ── Graceful shutdown ─────────────────────────────────────────────────────
   app.enableShutdownHooks();
 
-  await app.listen(port);
+  console.log('6️⃣ About to listen on port ' + port + '...');
+  console.log('7️⃣ Creating HTTP server...');
+  const server = app.getHttpServer();
+  console.log('8️⃣ HTTP server created:', typeof server);
+  console.log('9️⃣ Calling app.listen()...');
+  try {
+    console.log('🔟 Attempting to listen...');
+    await app.listen(port);
+    console.log('✅ Server listening on port ' + port + '!');
+  } catch (err) {
+    console.error('❌ Error in app.listen:', err);
+    process.exit(1);
+  }
+  console.log('7️⃣ Server listening on port ' + port + '!');
   logger.log(`🚀 Beleqet API running on http://localhost:${port}/api/v1`);
   logger.log(`   Environment: ${nodeEnv}`);
 }
@@ -83,3 +101,5 @@ bootstrap().catch((err) => {
   logger.error('Fatal startup error', err);
   process.exit(1);
 });
+
+

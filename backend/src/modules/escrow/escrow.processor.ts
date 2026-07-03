@@ -1,4 +1,4 @@
-import { Processor, Process, OnQueueFailed } from '@nestjs/bull';
+﻿import { Processor, Process, OnQueueFailed } from '@nestjs/bull';
 import { Logger, Injectable } from '@nestjs/common';
 import { Job as BullJob } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
@@ -46,13 +46,13 @@ export class EscrowProcessor {
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
     @InjectQueue(QUEUE_NAMES.NOTIFICATIONS)
-    private readonly notificationsQueue: Queue,
+    private readonly notificationsQueue: any,
   ) {}
 
   // ── 1. Process Chapa / Telebirr Webhook ───────────────────────────────────
 
   @Process(ESCROW_JOBS.PROCESS_WEBHOOK)
-  async handleWebhook(job: BullJob<WebhookPayload>) {
+  async handleWebhook(job: any) {
     const { reference, status, tx_ref } = job.data;
     this.logger.log(`[escrow-webhook] ref=${reference} status=${status}`);
 
@@ -129,7 +129,7 @@ export class EscrowProcessor {
   // ── 2. Auto-Release Milestone After 3-Day Hold ────────────────────────────
 
   @Process(ESCROW_JOBS.AUTO_RELEASE)
-  async handleAutoRelease(job: BullJob<AutoReleasePayload>) {
+  async handleAutoRelease(job: any) {
     const { milestoneId, freelancerId, amount } = job.data;
     this.logger.log(`[auto-release] Processing milestone ${milestoneId} for freelancer ${freelancerId}`);
 
@@ -138,7 +138,7 @@ export class EscrowProcessor {
     if (releaseAt > new Date()) {
       // Re-queue with the correct delay
       const delayMs = releaseAt.getTime() - Date.now();
-      await job.queue.add(ESCROW_JOBS.AUTO_RELEASE, job.data, { delay: delayMs });
+      await job?.queue?.add(ESCROW_JOBS.AUTO_RELEASE, job.data, { delay: delayMs });
       this.logger.debug(`[auto-release] Hold not elapsed, re-queued with ${delayMs}ms delay`);
       return;
     }
@@ -201,7 +201,7 @@ export class EscrowProcessor {
   // ── 3. Process Withdrawal ─────────────────────────────────────────────────
 
   @Process(ESCROW_JOBS.PROCESS_WITHDRAWAL)
-  async handleWithdrawal(job: BullJob<WithdrawalPayload>) {
+  async handleWithdrawal(job: any) {
     const { userId, amount, method } = job.data;
     this.logger.log(`[withdrawal] Processing ETB ${amount} via ${method} for user ${userId}`);
 
@@ -219,7 +219,7 @@ export class EscrowProcessor {
             account_number: job.data.accountRef,
             amount: amount.toString(),
             currency: 'ETB',
-            reference: `withdrawal-${job.id}`,
+            reference: `withdrawal-${job?.id}`,
             bank_code: method === 'TELEBIRR' ? '855' : '853d0598-9c01-41ab-ac99-48eab4da1513', // Use 855 for Telebirr
           }),
         });
@@ -247,10 +247,15 @@ export class EscrowProcessor {
   // ── Error Handler ─────────────────────────────────────────────────────────
 
   @OnQueueFailed()
-  onFailed(job: BullJob, error: Error) {
+  onFailed(job: any, error: Error) {
     this.logger.error(
-      `[escrow-queue] Job failed: [${job.name}] id=${job.id} attempt=${job.attemptsMade}`,
+      `[escrow-queue] Job failed: [${job?.name}] id=${job?.id} attempt=${job?.attemptsMade}`,
       error.stack,
     );
   }
 }
+
+
+
+
+
